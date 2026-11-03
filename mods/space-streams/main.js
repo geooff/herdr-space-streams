@@ -692,7 +692,7 @@ export default class Spaces extends View {
                 else openOverlay({ mod: "worktree", kind: "dialog", width: 440, height: 260, props: { space: w.id, action: "new" } });
               })
               .child("+")))
-          // A worktree: × closes its space and removes the checkout (the dialog warns about uncommitted work).
+          // A worktree: the trash icon closes its space and removes the checkout (the dialog warns about uncommitted work).
           .when(Boolean(g?.linked), (el) => el.child(
             div().id(`space-remove-wt-${w.id}`).flex_none().px(5).rounded(4).text_color(t.muted)
               .opacity(this.hovered === w.id ? 1 : 0)
@@ -703,7 +703,7 @@ export default class Spaces extends View {
                 this.press = null;
                 openOverlay({ mod: "worktree", kind: "dialog", width: 480, height: 300, props: { space: w.id, action: "remove" } });
               })
-              .child("×")))
+              .child(svg("mods/space-streams/trash.svg").size(13))))
           .when(Boolean(kids), (el) => el.child(this.foldToggle(w, g, kids, t))),
       );
   }

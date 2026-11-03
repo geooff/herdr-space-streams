@@ -83,3 +83,5 @@ What Space Streams adds:
 ## License
 
 MIT (`LICENSE`). `mods/space-streams`, `mods/space-streams-menu` and `layouts/main-streams.json` started as copies of the `spaces` mod, `menu` mod and `main` layout that ship with [Herdr](https://herdr.dev), and that code keeps Herdr's Apache License 2.0 (`LICENSE-APACHE`). The two mods say at the top what was changed; the layout only swaps the Spaces block's mod.
+
+`mods/space-streams/trash.svg` is the "trash-2" icon from [Lucide](https://lucide.dev) (ISC License).
