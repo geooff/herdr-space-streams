@@ -1,1 +1,14 @@
-{ "global": { "cmd-shift-g": "space-streams.group", "cmd-shift-e": "mod.open:emoji-picker" } }
+{
+  "global": {
+    "cmd-shift-g": "space-streams.group",
+    "cmd-shift-e": "mod.open:emoji-picker"
+  },
+  "layout:main-streams": {
+    "alt-down": "space-streams.next",
+    "alt-up": "space-streams.prev",
+    "ctrl-shift-pagedown": "space-streams.next",
+    "ctrl-shift-pageup": "space-streams.prev",
+    "ctrl-space shift-n": "space-streams.next",
+    "ctrl-space shift-p": "space-streams.prev"
+  }
+}

@@ -1,4 +1,5 @@
-// Space Streams' right-click menu: Herdr's menu plus "Move to group…" for worktree spaces.
+// Space Streams' right-click menu. Modified from Herdr's shipped `menu` mod (Apache License 2.0,
+// see LICENSE-APACHE): "Move to group…" was added for worktree spaces, and worktree items use the shipped `worktree` dialog.
 // Context menus (Herdr's items). Opened as a popup with
 // props { tab: "pane" | "tab" | "space" | "global", target }.
 // ↑/↓ move, Enter runs, Esc closes. An item is [label, command, args];

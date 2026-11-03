@@ -44,14 +44,16 @@ The sidebar, top to bottom (it replaces Herdr's `spaces` block, about 240–300 
 - `mods/space-streams-menu`: the space right-click menu. It's a copy of Herdr's `menu` with **Move to group…** added for worktree spaces. It uses the shipped `worktree` dialog.
 - `mods/emoji-picker`: the popup (`place: "none"`, overlay 360×300). Props: `{ key, name }`. Without props it targets the focused space's repo. Choices live in `shared("space.emoji")` as `{ [key]: "🦊" }`, where a repo's key is the same `[machine, git common dir]` JSON and a space outside a repo uses `space:<id>`. `system-index.py` prints macOS's emoji search data (CoreEmoji framework resources) as JSON, and the picker runs it once with `python3 -I`.
 - **Agent icons:** from `panes()[i].program` (`agent` and `icon`), the same table Herdr's Agents list uses.
-- `keys.json`: `cmd-shift-g` → `space-streams.group`, `cmd-shift-e` → `mod.open:emoji-picker`.
+- `layouts/main-streams.json`: Herdr's `main` layout (0.1.12) with the Spaces block's mod set to `space-streams`.
+- **Next / previous space:** Herdr's `space.next` and `space.prev` follow Herdr's own order, which groups and streams don't change, so they'd jump around the list. The sidebar fills `this.order` (the spaces as drawn, leaving out folded ones) on every render, and its `space-streams.next` / `space-streams.prev` commands step through it with wraparound and run `space.select {id}`. They reach only a shown copy, so with the sidebar hidden they do nothing.
+- `keys.json`: global `cmd-shift-g` → `space-streams.group` and `cmd-shift-e` → `mod.open:emoji-picker`. A `layout:main-streams` section binds `alt-down` / `alt-up`, `ctrl-shift-pagedown` / `pageup` and `ctrl-space shift-n` / `shift-p` to `space-streams.next` / `.prev`.
 - **Icons:** the shipped `mods/workspace-chrome/*.svg`.
 
 ## Install
 
 1. Copy the four `mods/` folders into your Herdr home's `mods/`, `mod.json` first. Herdr docks a folder it sees without one.
 2. Merge `keys.json` into yours.
-3. Clone your layout (`herdr-app do layout.clone '{"name":"main","as":"my-layout"}'`) and change the `spaces` block's `"mod": "spaces"` to `"mod": "space-streams"`.
+3. Copy `layouts/main-streams.json` to `layouts/` and `herdr-app do layout.switch --name main-streams`. Or, in a layout of your own, change the `spaces` block's `"mod": "spaces"` to `"mod": "space-streams"` and copy the `layout:main-streams` keys into a `layout:<name>` section.
 4. Optional: tell your agents about it. For example, in `~/.claude/CLAUDE.md`:
 
    > When you run inside Herdr in a repo worktree, read `~/.config/herdr-app/data/space-groups.json` and join the work stream your work belongs to with `hc label "$HC_TERMINAL_ID" herdr.group="<exact stream name>"`. Reuse an existing name character for character, even from another repo. Only make a new one when nothing fits, and name the effort, not your slice of it.
@@ -74,4 +76,5 @@ The sidebar, top to bottom (it replaces Herdr's `spaces` block, about 240–300 
 - Right-click → Move to group… → typing a new name and Enter moves the space under a new header. Remove from group puts it back, and the empty group disappears.
 - Closing a grouped space removes it from the group.
 - Clicking a repo's avatar opens "Icon for <repo>". Typing "fox" finds 🦊, and picking it shows 🦊 on the repo and every worktree. In Streams view, a row with an agent shows 🦊 plus the agent's icon.
+- In `main-streams`, `herdr-app do space-streams.next` from the last space of a group shows the next space in the list as drawn, not in Herdr's own order.
 - `herdr-app check` passes for all four mods.

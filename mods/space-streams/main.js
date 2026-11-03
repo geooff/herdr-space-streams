@@ -3,7 +3,9 @@
 // Streams view: groups with the same name across repos shown as one work stream.
 // Agents join a group with `hc label "$HC_TERMINAL_ID" herdr.group="<name>"`.
 // props: { under?: "<folder>" } shows only spaces whose folder is inside it.
-// Based on Herdr's shipped `spaces` mod: stable colored avatars, worktrees under their checkout,
+// Modified from Herdr's shipped `spaces` mod (Apache License 2.0, see LICENSE-APACHE): groups,
+// streams, the view toggle, list-order next/prev, the `under` prop and repo marks were added.
+// From it: stable colored avatars, worktrees under their checkout,
 // grouped by machine when more than one is known. After a space's name, the repo
 // its first terminal is in now, only where unusual: branch, uncommitted changes (●N), ahead/behind. Agent state lives in the agents list, not here. Click to
 // switch, right-click for its menu, drag to reorder.
@@ -100,12 +102,20 @@ export default class Spaces extends View {
     cx.timer.every(250, (cx) => this.checkNew(cx));
     cx.timer.every(1000, () => this.applyTags());
     // Commands (keys.json): "space-streams.group" puts the shown space in a group,
-    // "space-streams.view" switches between Repos and Streams.
+    // "space-streams.view" switches between Repos and Streams, "space-streams.next" / ".prev"
+    // show the space below / above in the list as drawn (Herdr's space.next follows its own
+    // order, which groups and streams don't change, so it would jump around the list).
     cx.spawn(async (cx) => {
       for (;;) {
         const c = await nextCommand();
         const s = spaces().find((x) => x.active);
         if (c === "group" && s) groupDialog({ space: s.id });
+        if ((c === "next" || c === "prev") && this.order?.length) {
+          const at = this.order.indexOf(s?.id);
+          const n = this.order.length;
+          const to = at < 0 ? (c === "next" ? 0 : n - 1) : (at + (c === "next" ? 1 : n - 1)) % n;
+          run("space.select", { id: this.order[to] });
+        }
         if (c === "view") { this.mode = this.mode === "streams" ? "repos" : "streams"; localStorage.setItem("spaces.mode", this.mode); cx.notify(); }
       }
     });
@@ -401,12 +411,14 @@ export default class Spaces extends View {
       }
       // A group header isn't dragged; its spaces move among themselves.
       if (r.hdr) { y += h; return this.groupRow(r, t); }
+      this.order.push(r.w.id);
       units.push({ key: r.w.id, lane: r.lane ?? (r.tree ? `kids:${r.parent}` : `top:${r.w.machine ?? ""}`), ids: [r.w.id, ...(r.block ?? [])], rows: [r.w.id], top: y, height: h });
       y += h;
       return collapsed ? this.compact(r, t) : this.row(r, t);
     };
     this.units = units;
     this.drawn = rows;
+    this.order = []; // the spaces as drawn, for next/prev (filled by draw: folded ones are left out)
     const remote = [...new Set([...rows.map(r => r.w?.machine).filter(Boolean), ...this.machines.map(m => m.name)])].sort();
     const loading = m => {
       const layout = machines().find(k => k.name === m)?.layout;
