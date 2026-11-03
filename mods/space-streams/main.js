@@ -663,7 +663,7 @@ export default class Spaces extends View {
           .gap(9)
           .items_center()
           .when(Boolean(tree), el => el.pl(depth === 2 ? 38 : 22))
-          .child(this.avatar(w, g, tree, fill, t))
+          .child(this.avatar(w, g, tree, fill, t, inStream))
           .child(div().flex_shrink(1).min_w(0).max_w(150).truncate().text_color(t.foreground).child(w.name))
           .children(g ? this.gitTail(g, inStream ? null : tree, w.name, t, where(w, panes())) : [div().flex_1()])
           // A repo's main checkout: + starts a new workspace (worktree, setup, agent) in it.
@@ -697,13 +697,15 @@ export default class Spaces extends View {
   }
 
   // The repo's emoji (else the name's first letter on its color); with an agent running in the
-  // space, half emoji and half the agent's icon. With emoji-picker installed, click it to choose the emoji.
-  avatar(w, g, tree, fill, t) {
+  // space, half emoji and half the agent's icon. Click it to choose the emoji (emoji-picker, bundled).
+  // In Streams view a row always wears its repo's mark (emoji, else letter on the repo's color),
+  // since rows from different repos sit side by side there.
+  avatar(w, g, tree, fill, t, inStream = false) {
     const emoji = (shared("space.emoji") ?? {})[emojiKey(w, g)];
     const agent = agentOf(w, panes());
     const mark = emoji
       ? div().size(18).flex_none().flex().items_center().justify_center().text_size(12.5).child(emoji)
-      : tree && !agent
+      : tree && !agent && !inStream
         ? div().size(18).flex_none().flex().items_center().justify_center().child(svg("mods/workspace-chrome/branch.svg").size(13).text_color(t.dim))
         : div().size(18).flex_none().flex().items_center().justify_center().bg(tree ? this.repoFill(g, t) ?? fill : fill).text_size(10.5).font_bold().text_color("#ffffff").child([...(tree ? g?.name ?? w.name : w.name)][0]?.toUpperCase() ?? "?");
     const picker = Boolean(this.has?.["emoji-picker"]);
